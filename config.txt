@@ -1,0 +1,10 @@
+#WIDTH
+#This is a comment.
+
+WIDTH=20
+#WIDTH=10=10=30
+HEIGHT=15
+ENTRY=0,0
+EXIT=14,19
+OUTPUT_FILE=output.txt
+PERFECT=TrUe
