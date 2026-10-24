@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 
+
 @dataclass
 class Config:
     width: int
@@ -9,6 +10,7 @@ class Config:
     exit: tuple[int, int]
     output_file: str
     perfect: bool
+
 
 def parse_file():
     raw_config: dict[str, Any] = {}
