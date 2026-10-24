@@ -25,7 +25,7 @@
 | T12 | `ConfigError` / `MazeError` | @jisobaek | ⬜ | 🟠 | `feat/config` | `app/errors.py` |  |  |
 | T13 | BFS shortest path + NESW string | @jisobaek | ⬜ | 🔴 | `feat/solver` | `mazegen/solver.py` |  |  |
 | T14 | `main()` + error printing to stderr | @jisobaek | ⬜ | 🔴 | `feat/main` | `a_maze_ing.py` |  | Never crash |
-| T15 | Output writer (hex grid, entry, exit, path) | @jisobaek | ⬜ | 🔴 | `feat/writer` | `app/writer.py` |  |  |
+| T15 | Output writer (hex grid, entry, exit, path) | @jisobaek | ✅ | 🔴 | `feat/writer` | `app/writer.py` |  |  |
 | T16 | ASCII render + colors | @jisobaek | ⬜ | 🟠 | `feat/display` | `app/display.py` |  | Start on a hard-coded grid |
 | T17 | Menu: regen / path / colors / quit | @jisobaek | ⬜ | 🟠 | `feat/display` | `app/display.py` |  | Handle Ctrl+C / Ctrl+D |
 | T18 | Makefile (install, run, debug, clean, lint, lint-strict) | @jisobaek | ⬜ | 🟠 | `chore/makefile` | `Makefile` |  | Tabs, not spaces |
