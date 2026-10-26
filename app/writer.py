@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 def output_maze(
         file: str,
         maze: list[list[int]],
@@ -42,8 +43,9 @@ def output_maze(
 
 if __name__ == "__main__":
     maze = [[9, 5],
-            [12, 13]]
+            [7, 12],
+            [9, 13]]
     entry = (0, 0)
-    exit_p = (19, 14)
+    exit_p = (19, 17)
     path = "SWESENSWSSENEEENNESSSEES"
     output_maze("output_maze.txt", maze, entry, exit_p, path)
