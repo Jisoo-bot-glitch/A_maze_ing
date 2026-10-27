@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "a_maze_ing"
+version = "1.0.0"
+description = "Reusable"
+requires-python = ">=3/10"
+license = "MIT"
+license = ["LICENSE.md"]
+
+[tool.setuptools]
+packages = ["a_maze_ing"]
