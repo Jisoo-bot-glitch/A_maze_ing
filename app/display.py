@@ -5,19 +5,30 @@ SOUTH = 4
 WEST = 8
 
 
-def display(maze: list[list[int]]) -> None:
-    for floor in maze:
+def display(
+        maze: list[list[int]],
+        entry: tuple[int, int],
+        exit_p: tuple[int, int],
+        path: str) -> None:
+    for y, floor in enumerate(maze):
         top = []
         mid = []
-        for cell in floor:
+        for x, cell in enumerate(floor):
             if cell & NORTH:
                 top.append("+---")
             else:
                 top.append("+   ")
             if cell & WEST:
-                mid.append("|   ")
+                wall = "|"
             else:
-                mid.append("    ")
+                wall = " "
+            if (x, y) == entry:
+                inside = " S "
+            elif (x, y) == exit_p:
+                inside = " E "
+            else:
+                inside = "   "
+            mid.append(wall + inside)
         top.append("+")
         if floor[-1] & EAST:
             mid.append("|")
@@ -44,4 +55,5 @@ if __name__ == "__main__":
             [9, 1, 6, 13, 4, 5, 3],
             [10, 12, 5, 1, 3, 11, 10],
             [12, 5, 7, 10, 12, 6, 14]]
-    display(maze)
+    path = "ESEEESWSWWSWSEES"
+    display(maze, (1, 0), (3, 6), path)
