@@ -3,12 +3,12 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "a_maze_ing"
+name = "mazegen"
 version = "1.0.0"
-description = "Reusable"
-requires-python = ">=3/10"
+description = "Reusable generator"
+requires-python = ">=3.10"
 license = "MIT"
-license = ["LICENSE.md"]
+license-files = ["LICENSE.md"]
 
 [tool.setuptools]
-packages = ["a_maze_ing"]
+packages = ["mazegen"]
