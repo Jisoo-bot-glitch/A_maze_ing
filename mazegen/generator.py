@@ -1,17 +1,31 @@
+"""Maze generator for A-Maze-ing
+I build the maze in a few steps:
+1. all cells start closed (0xF, every wall is there),
+2. I put the 42 pattern in the middle, its cells stay closed,
+3. a DFS with a stack opens walls and makes a perfect maze,
+4. in Pac-Man mode (perfect=False) I open more walls to remove
+dead-ends and make loops, but never a 3x3 open room,
+5. at the end the maze checks itself and raises MazeError if
+something is wrong
+
+The grid is grid[y][x], one int 0..15 per cell. Bits are the closed
+walls: N=1, E=2, S=4, W=8. A cell is (x, y) = (column, row)
+"""
+
 import random
 
 from .constants import (
     ALL_WALLS,
+    CHAR,
     DIRECTIONS,
     E,
     MAX_OPEN_AREA,
-    MIN_HEIGHT_FOR_PATTERN,
+    MIN_HEIGHT_PATTERN,
     MIN_LOOPS,
-    MIN_WIDTH_FOR_PATTERN,
+    MIN_WIDTH_PATTERN,
     N,
     OPPOSITE,
     PATTERN_42,
-    PATTERN_CHAR,
     STEP,
     S,
     W,
@@ -26,8 +40,9 @@ MIN_SIZE = 2
 
 SEED_RANGE = 2 ** 32
 
-# Generate a perfect maze or a Pac-Man-ready board.
 class MazeGenerator:
+    """Generate a perfect maze or a Pac-Man-ready board"""
+
     def __init__(
         self,
         width: int,
@@ -37,6 +52,7 @@ class MazeGenerator:
         perfect: bool = True,
         seed: int | None = None,
     ) -> None:
+        """Check the parameters and save them, nothing is built yet"""
         if not _is_int(width) or not _is_int(height):
             raise MazeError('width and height must be integers')
         if width < MIN_SIZE or height < MIN_SIZE:
@@ -63,6 +79,8 @@ class MazeGenerator:
 
     # Public API
     def generate(self) -> list[list[int]]:
+        """Build a new maze and return a copy of the grid"""
+
         self._rng = random.Random(self._seed)
         self._grid = [
             [ALL_WALLS] * self._width for _ in range(self._height)
@@ -78,57 +96,59 @@ class MazeGenerator:
 
     @property
     def grid(self) -> list[list[int]]:
+        """Return a copy of the grid, grid[y][x]"""
         self._require_generated()
         return [row[:] for row in self._grid]
 
-    # Number of columns
     @property
     def width(self) -> int:
+        """Number of columns"""
         return self._width
 
-    # Number of rows
     @property
     def height(self) -> int:
+        """Number of rows"""
         return self._height
 
-    # Entry cell (x, y)
     @property
     def entry(self) -> Cell:
+        """Entry cell (x, y)"""
         return self._entry
 
-    # Exit cell (x, y)
     @property
     def exit(self) -> Cell:
+        """Exit cell (x, y)"""
         return self._exit
 
-    # True for a perfect maze, False for Pac-Man mode
     @property
     def perfect(self) -> bool:
+        """True for a perfect maze, False for Pac-Man mode"""
         return self._perfect
 
-    # The seed actually used (given, or drawn when None)
     @property
     def seed(self) -> int:
+        """Seed used to generate the maze"""
         return self._seed
 
-    # Cells of the 42 pattern (empty when it did not fit)
     @property
     def pattern_cells(self) -> frozenset[Cell]:
+        """Cells of the 42 pattern, empty if the maze is too small"""
         return frozenset(self._pattern)
 
-    # False when the maze is too small for the 42 pattern
     @property
     def pattern_drawn(self) -> bool:
+        """False when the maze is too small for the 42 pattern"""
         return self._pattern_drawn
 
     def has_wall(self, x: int, y: int, direction: int) -> bool:
+        """Return True if the wall on this side of the cell is closed"""
         self._require_generated()
         if not self._inside(x, y):
             raise MazeError(f'cell ({x}, {y}) is outside the maze')
         return bool(self._grid[y][x] & direction)
 
-    # Find a path from entry to exit
     def solve(self) -> list[Cell]:
+        """Return a shortest path from entry to exit (list of cells)"""
         self._require_generated()
         path = shortest_path(self._grid, self._entry, self._exit)
         if not path:
@@ -136,10 +156,12 @@ class MazeGenerator:
         return path
 
     def solution_directions(self) -> str:
+        """Return the shortest path as N/E/S/W letters"""
         return path_to_directions(self.solve())
 
     # Grid helpers
     def _checked_cell(self, cell: Cell, name: str) -> Cell:
+        """Check that the cell is a pair of ints inside the grid"""
         if (
             not isinstance(cell, tuple)
             or len(cell) != 2
@@ -154,33 +176,41 @@ class MazeGenerator:
         return cell
 
     def _require_generated(self) -> None:
+        """Raise MazeError if generate() was not called yet"""
         if not self._grid:
             raise MazeError('maze not generated yet: call generate()')
 
     def _inside(self, x: int, y: int) -> bool:
+        """Return True if (x, y) is inside the grid"""
         return 0 <= x < self._width and 0 <= y < self._height
 
     def _neighbour(self, x: int, y: int, d: int) -> Cell:
+        """Return the cell next to (x, y) on side d"""
         dx, dy = STEP[d]
         return x + dx, y + dy
 
     def _remove_wall(self, x: int, y: int, d: int) -> None:
+        """Open the wall on side d, on both cells"""
         nx, ny = self._neighbour(x, y, d)
         self._grid[y][x] &= ~d
         self._grid[ny][nx] &= ~OPPOSITE[d]
 
     def _add_wall(self, x: int, y: int, d: int) -> None:
+        """Close the wall on side d, on both cells"""
         nx, ny = self._neighbour(x, y, d)
         self._grid[y][x] |= d
         self._grid[ny][nx] |= OPPOSITE[d]
 
     def _open_sides(self, x: int, y: int) -> int:
+        """Count the open walls of the cell (1 = dead-end)"""
         return sum(1 for d in DIRECTIONS if not self._grid[y][x] & d)
 
     def _is_free(self, x: int, y: int) -> bool:
+        """Return True if the cell is inside and not a 42 cell"""
         return self._inside(x, y) and (x, y) not in self._pattern
 
     def _closed_free_sides(self, x: int, y: int) -> list[int]:
+        """Return the closed walls that lead to a normal cell"""
         return [
             d for d in DIRECTIONS
             if self._grid[y][x] & d
@@ -189,10 +219,11 @@ class MazeGenerator:
 
     # 42 pattern
     def _place_pattern(self) -> None:
+        """Mark the 42 cells in the middle (skip if the maze is too small)"""
         self._pattern = set()
         self._pattern_drawn = (
-            self._width >= MIN_WIDTH_FOR_PATTERN
-            and self._height >= MIN_HEIGHT_FOR_PATTERN
+            self._width >= MIN_WIDTH_PATTERN
+            and self._height >= MIN_HEIGHT_PATTERN
         )
         if not self._pattern_drawn:
             return
@@ -200,7 +231,7 @@ class MazeGenerator:
         oy = self._height // 2 - len(PATTERN_42) // 2
         for row, line in enumerate(PATTERN_42):
             for col, char in enumerate(line):
-                if char == PATTERN_CHAR:
+                if char == CHAR:
                     self._pattern.add((ox + col, oy + row))
         for name, cell in (('entry', self._entry), ('exit', self._exit)):
             if cell in self._pattern:
@@ -209,8 +240,8 @@ class MazeGenerator:
                     'another cell'
                 )
 
-    # Perfect maze: iterative randomized depth-first search
     def _carve_perfect(self) -> None:
+        """Make a perfect maze with an iterative DFS (stack, no recursion)"""
         visited: set[Cell] = set(self._pattern)
         stack: list[Cell] = [self._entry]
         visited.add(self._entry)
@@ -232,6 +263,7 @@ class MazeGenerator:
 
     # Pac-Man mode
     def _braid(self) -> None:
+        """Remove dead ends by opening one more wall in each of them"""
         dead_ends = [
             (x, y)
             for y in range(self._height)
@@ -253,6 +285,7 @@ class MazeGenerator:
                     break
 
     def _open_key_cells(self) -> None:
+        """Give the 4 corners and the centre at least two exits"""
         w, h = self._width, self._height
         key_cells = [
             (0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1),
@@ -268,6 +301,7 @@ class MazeGenerator:
                     break
 
     def _ensure_loops(self) -> None:
+        """Open walls until there are at least MIN_LOOPS loops"""
         if self._count_loops() >= MIN_LOOPS:
             return
         walls = [
@@ -288,6 +322,7 @@ class MazeGenerator:
         )
 
     def _try_open(self, x: int, y: int, d: int) -> bool:
+        """Open a wall, close it back if it makes a 3x3 room"""
         self._remove_wall(x, y, d)
         if self._has_open_area((x, y), self._neighbour(x, y, d)):
             self._add_wall(x, y, d)
@@ -295,6 +330,7 @@ class MazeGenerator:
         return True
 
     def _has_open_area(self, a: Cell, b: Cell) -> bool:
+        """Return True if an open 3x3 square contains both a and b"""
         size = MAX_OPEN_AREA
         x_lo = max(0, max(a[0], b[0]) - size + 1)
         x_hi = min(min(a[0], b[0]), self._width - size)
@@ -307,6 +343,7 @@ class MazeGenerator:
         return False
 
     def _window_open(self, wx: int, wy: int) -> bool:
+        """Return True if all 12 inner walls of this 3x3 window are open"""
         size = MAX_OPEN_AREA
         for y in range(wy, wy + size):
             for x in range(wx, wx + size):
@@ -318,6 +355,7 @@ class MazeGenerator:
         return True
 
     def _count_open_walls(self) -> int:
+        """Count open inner walls, each shared wall once (E and S only)"""
         count = 0
         for y in range(self._height):
             for x in range(self._width):
@@ -328,11 +366,13 @@ class MazeGenerator:
         return count
 
     def _count_loops(self) -> int:
+        """Return the number of loops: open walls - cells + 1"""
         cells = self._width * self._height - len(self._pattern)
         return self._count_open_walls() - cells + 1
 
     # Self-check
     def _validate(self) -> None:
+        """Check the finished maze, raise MazeError if something is wrong"""
         self._check_coherence()
         self._check_border()
         self._check_connected()
@@ -345,6 +385,7 @@ class MazeGenerator:
             self._check_no_open_area()
 
     def _check_coherence(self) -> None:
+        """Check that both cells agree on every shared wall"""
         for y in range(self._height):
             for x in range(self._width):
                 for d in (E, S):
@@ -359,6 +400,7 @@ class MazeGenerator:
                         )
 
     def _check_border(self) -> None:
+        """Check that the outer border is fully closed"""
         for x in range(self._width):
             if not self._grid[0][x] & N or \
                     not self._grid[self._height - 1][x] & S:
@@ -369,14 +411,16 @@ class MazeGenerator:
                 raise MazeError(f'border open in row {y}')
 
     def _check_connected(self) -> None:
+        """Check that every cell except 42 is reachable from entry"""
         reached = bfs(self._grid, self._entry)
         expected = self._width * self._height - len(self._pattern)
         if len(reached) != expected:
             raise MazeError(
-                f'{expected - len(reached)} cell(s) unreachable from entry'
+                f'{expected - len(reached)} cell unreachable from entry'
             )
 
     def _check_no_open_area(self) -> None:
+        """Check that there is no open 3x3 area anywhere"""
         size = MAX_OPEN_AREA
         for wy in range(self._height - size + 1):
             for wx in range(self._width - size + 1):
@@ -387,4 +431,5 @@ class MazeGenerator:
 
 
 def _is_int(value: object) -> bool:
+    """Return True for a real int (True/False do not count)"""
     return isinstance(value, int) and not isinstance(value, bool)

@@ -1,3 +1,5 @@
+"""Shared constants: wall bits, moves, 42 pattern, Pac-Man limits"""
+
 from typing import Final
 
 N: Final[int] = 1
@@ -43,4 +45,6 @@ MIN_WIDTH_PATTERN: Final[int] = PATTERN_WIDTH + 2 * PATTERN_MARGIN
 MIN_HEIGHT_PATTERN: Final[int] = PATTERN_HEIGHT + 2 * PATTERN_MARGIN
 CHAR: Final[str] = '#'
 
-# Pac-Man mode lower
+# Pac-Man mode
+MIN_LOOPS: Final[int] = 2
+MAX_OPEN_AREA: Final[int] = 3
