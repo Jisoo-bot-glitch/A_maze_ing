@@ -34,13 +34,13 @@
 
 | ID | Task | Owner | Status | Priority | Branch | Files | Due | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| T20 | Grid model + wall bits helpers | @your_login | ⬜ | 🔴 | `feat/generator` | `mazegen/generator.py` |  |  |
-| T21 | "42" pattern placement + too-small warning | @your_login | ⬜ | 🔴 | `feat/generator` | `mazegen/generator.py` |  | Gap column = centre |
-| T22 | Perfect maze — iterative DFS with seed | @your_login | ⬜ | 🔴 | `feat/generator` | `mazegen/generator.py` |  |  |
-| T23 | Pac-Man mode — braiding, no 3×3, corners + centre | @your_login | ⬜ | 🔴 | `feat/pacman` | `mazegen/generator.py` |  | Cycles ≥ 2 |
-| T24 | Self-validation (`_validate`) | @your_login | ⬜ | 🟠 | `feat/generator` | `mazegen/generator.py` |  |  |
-| T25 | `pyproject.toml` + build `.whl` at root | @your_login | ⬜ | 🟠 | `chore/package` | `pyproject.toml` |  | Test in clean venv |
-| T26 | `LICENSE.md` | @your_login | ⬜ | 🟢 | `chore/package` | `LICENSE.md` |  | MIT |
+| T20 | Grid model + wall bits helpers | @your_login | ✅ | 🔴 | `feat/generator` | `mazegen/generator.py` |  |  |
+| T21 | "42" pattern placement + too-small warning | @your_login | ✅ | 🔴 | `feat/generator` | `mazegen/generator.py` |  | Gap column = centre |
+| T22 | Perfect maze — iterative DFS with seed | @your_login | ✅ | 🔴 | `feat/generator` | `mazegen/generator.py` |  |  |
+| T23 | Pac-Man mode — braiding, no 3×3, corners + centre | @your_login | ✅ | 🔴 | `feat/pacman` | `mazegen/generator.py` |  | Cycles ≥ 2 |
+| T24 | Self-validation (`_validate`) | @your_login | ✅ | 🟠 | `feat/generator` | `mazegen/generator.py` |  |  |
+| T25 | `pyproject.toml` + build `.whl` at root | @your_login | 🟡 | 🟠 | `chore/package` | `pyproject.toml` |  | Test in clean venv |
+| T26 | `LICENSE.md` | @your_login | ✅ | 🟢 | `chore/package` | `LICENSE.md` |  | MIT |
 
 ## Phase 3 — Integration & delivery (together)
 
