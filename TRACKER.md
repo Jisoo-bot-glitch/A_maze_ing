@@ -1,7 +1,7 @@
 # A-Maze-ing — Team Tracker
 
 > Who does what. Update your rows in the same commit as the work.
-> Owners: `@your_login` = Elvira, `@teammate_login` = teammate (replace with real 42 / GitHub logins).
+> Owners: `@your_login` = Elvira, `@jisobaek` = jisoo (replace with real 42 / GitHub logins).
 
 **Status legend:** ⬜ To do · 🟡 In progress · 🔍 In review · ✅ Done · ⛔ Blocked
 **Priority:** 🔴 High · 🟠 Medium · 🟢 Low
@@ -16,18 +16,19 @@
 | T01 | Agree `MazeGenerator` public API | both | ⬜ | 🔴 | `main` | `mazegen/generator.py` |  | Stub methods + docstrings |
 | T02 | Repo skeleton, `.gitignore`, default `config.txt` | @teammate_login | ⬜ | 🔴 | `setup` | root |  |  |
 
-## Phase 1 — Parsing & app (teammate)
+## Phase 1 — Parsing & app (Jisoo)
 
 | ID | Task | Owner | Status | Priority | Branch | Files | Due | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| T10 | Config parser (KEY=VALUE, comments, duplicates) | @teammate_login | 🟡 | 🔴 | `feat/config` | `app/config.py` |  | Already started |
-| T11 | Value validation (ints, coords, bool, bounds, entry ≠ exit) | @teammate_login | ⬜ | 🔴 | `feat/config` | `app/config.py` |  |  |
-| T12 | `ConfigError` / `MazeError` | @teammate_login | ⬜ | 🟠 | `feat/config` | `app/errors.py` |  |  |
-| T13 | `main()` + error printing to stderr | @teammate_login | ⬜ | 🔴 | `feat/main` | `a_maze_ing.py` |  | Never crash |
-| T14 | Output writer (hex grid, entry, exit, path) | @teammate_login | ⬜ | 🔴 | `feat/writer` | `app/writer.py` |  |  |
-| T15 | ASCII render + colors | @teammate_login | ⬜ | 🟠 | `feat/display` | `app/display.py` |  | Start on a hard-coded grid |
-| T16 | Menu: regen / path / colors / quit | @teammate_login | ⬜ | 🟠 | `feat/display` | `app/display.py` |  | Handle Ctrl+C / Ctrl+D |
-| T17 | Makefile (install, run, debug, clean, lint, lint-strict) | @teammate_login | ⬜ | 🟠 | `chore/makefile` | `Makefile` |  | Tabs, not spaces |
+| T10 | Config parser (KEY=VALUE, comments, duplicates) | @jisobaek | 🟡 | 🔴 | `feat/config` | `app/config.py` |  | Already started |
+| T11 | Value validation (ints, coords, bool, bounds, entry ≠ exit) | @jisobaek | ⬜ | 🔴 | `feat/config` | `app/config.py` |  |  |
+| T12 | `ConfigError` / `MazeError` | @jisobaek | ⬜ | 🟠 | `feat/config` | `app/errors.py` |  |  |
+| T13 | BFS shortest path + NESW string | @jisobaek | ⬜ | 🔴 | `feat/solver` | `mazegen/solver.py` |  |  |
+| T14 | `main()` + error printing to stderr | @jisobaek | ⬜ | 🔴 | `feat/main` | `a_maze_ing.py` |  | Never crash |
+| T15 | Output writer (hex grid, entry, exit, path) | @jisobaek | ✅ | 🔴 | `feat/writer` | `app/writer.py` |  |  |
+| T16 | ASCII render + colors | @jisobaek | ⬜ | 🟠 | `feat/display` | `app/display.py` |  | Start on a hard-coded grid |
+| T17 | Menu: regen / path / colors / quit | @jisobaek | ⬜ | 🟠 | `feat/display` | `app/display.py` |  | Handle Ctrl+C / Ctrl+D |
+| T18 | Makefile (install, run, debug, clean, lint, lint-strict) | @jisobaek | ⬜ | 🟠 | `chore/makefile` | `Makefile` |  | Tabs, not spaces |
 
 ## Phase 2 — Generator package (Elvira)
 
@@ -37,10 +38,9 @@
 | T21 | "42" pattern placement + too-small warning | @your_login | ⬜ | 🔴 | `feat/generator` | `mazegen/generator.py` |  | Gap column = centre |
 | T22 | Perfect maze — iterative DFS with seed | @your_login | ⬜ | 🔴 | `feat/generator` | `mazegen/generator.py` |  |  |
 | T23 | Pac-Man mode — braiding, no 3×3, corners + centre | @your_login | ⬜ | 🔴 | `feat/pacman` | `mazegen/generator.py` |  | Cycles ≥ 2 |
-| T24 | BFS shortest path + NESW string | @your_login | ⬜ | 🔴 | `feat/solver` | `mazegen/generator.py` |  |  |
-| T25 | Self-validation (`_validate`) | @your_login | ⬜ | 🟠 | `feat/generator` | `mazegen/generator.py` |  |  |
-| T26 | `pyproject.toml` + build `.whl` at root | @your_login | ⬜ | 🟠 | `chore/package` | `pyproject.toml` |  | Test in clean venv |
-| T27 | `LICENSE.md` | @your_login | ⬜ | 🟢 | `chore/package` | `LICENSE.md` |  | MIT |
+| T24 | Self-validation (`_validate`) | @your_login | ⬜ | 🟠 | `feat/generator` | `mazegen/generator.py` |  |  |
+| T25 | `pyproject.toml` + build `.whl` at root | @your_login | ⬜ | 🟠 | `chore/package` | `pyproject.toml` |  | Test in clean venv |
+| T26 | `LICENSE.md` | @your_login | ⬜ | 🟢 | `chore/package` | `LICENSE.md` |  | MIT |
 
 ## Phase 3 — Integration & delivery (together)
 
