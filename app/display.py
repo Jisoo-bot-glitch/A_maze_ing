@@ -3,6 +3,11 @@ NORTH = 1
 EAST = 2
 SOUTH = 4
 WEST = 8
+RESET = "\033[0m"
+ENTRY_COLOR = "\033[43m"
+EXIT_COLOR = "\033[46m"
+PATH_COLOR = "\033[42m"
+WALL_COLOR = "\033[35m"
 
 
 def path_cells(entry: tuple[int, int],
@@ -54,25 +59,25 @@ def display(
         mid = []
         for x, cell in enumerate(floor):
             if cell & NORTH:
-                top.append("+---")
+                top.append(WALL_COLOR + "+---" + RESET)
             else:
-                top.append("+   ")
+                top.append(WALL_COLOR + "+   " + RESET)
             if cell & WEST:
-                wall = "|"
+                wall = WALL_COLOR + "|" + RESET
             else:
                 wall = " "
             if (x, y) == entry:
-                inside = " S "
+                inside = ENTRY_COLOR + "   " + RESET
             elif (x, y) == exit_p:
-                inside = " E "
+                inside = EXIT_COLOR + "   " + RESET
             elif (x, y) in cells:
-                inside = " . "
+                inside = PATH_COLOR + "   " + RESET
             else:
                 inside = "   "
             mid.append(wall + inside)
-        top.append("+")
+        top.append(WALL_COLOR + "+" + RESET)
         if floor[-1] & EAST:
-            mid.append("|")
+            mid.append(WALL_COLOR + "|" + RESET)
         top_line = ''.join(top)
         print(top_line)
         mid_line = ''.join(mid)
@@ -80,10 +85,10 @@ def display(
     bottom = []
     for end in maze[-1]:
         if end & SOUTH:
-            bottom.append("+---")
+            bottom.append(WALL_COLOR + "+---" + RESET)
         else:
-            bottom.append("+   ")
-    bottom.append("+")
+            bottom.append(WALL_COLOR + "+   " + RESET)
+    bottom.append(WALL_COLOR + "+" + RESET)
     bottom_line = ''.join(bottom)
     print(bottom_line)
 
