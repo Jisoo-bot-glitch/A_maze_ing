@@ -6,7 +6,8 @@ RESET = "\033[0m"
 ENTRY_COLOR = "\033[43m"
 EXIT_COLOR = "\033[46m"
 PATH_COLOR = "\033[42m"
-WALL_COLOR = "\033[35m"
+WALL_COLOR = "\033[45m"
+PATTERN_COLOR = "\033[47m"
 
 
 def path_cells(entry: tuple[int, int],
@@ -40,7 +41,8 @@ def display(
         maze: list[list[int]],
         entry: tuple[int, int],
         exit_p: tuple[int, int],
-        path: str) -> None:
+        path: str,
+        pattern: frozenset[tuple[int, int]]) -> None:
     """Print the maze in the terminal, highlighting entry, exit and path.
 
     Args:
@@ -58,11 +60,11 @@ def display(
         mid = []
         for x, cell in enumerate(floor):
             if cell & NORTH:
-                top.append(WALL_COLOR + "+---" + RESET)
+                top.append(WALL_COLOR + "    " + RESET)
             else:
-                top.append(WALL_COLOR + "+   " + RESET)
+                top.append(WALL_COLOR + " " + RESET + "   ")
             if cell & WEST:
-                wall = WALL_COLOR + "|" + RESET
+                wall = WALL_COLOR + " " + RESET
             else:
                 wall = " "
             if (x, y) == entry:
@@ -71,12 +73,14 @@ def display(
                 inside = EXIT_COLOR + "   " + RESET
             elif (x, y) in cells:
                 inside = PATH_COLOR + "   " + RESET
+            elif (x, y) in pattern:
+                inside = PATTERN_COLOR + "   " + RESET
             else:
                 inside = "   "
             mid.append(wall + inside)
-        top.append(WALL_COLOR + "+" + RESET)
+        top.append(WALL_COLOR + " " + RESET)
         if floor[-1] & EAST:
-            mid.append(WALL_COLOR + "|" + RESET)
+            mid.append(WALL_COLOR + " " + RESET)
         top_line = ''.join(top)
         print(top_line)
         mid_line = ''.join(mid)
@@ -84,10 +88,10 @@ def display(
     bottom = []
     for end in maze[-1]:
         if end & SOUTH:
-            bottom.append(WALL_COLOR + "+---" + RESET)
+            bottom.append(WALL_COLOR + "    " + RESET)
         else:
-            bottom.append(WALL_COLOR + "+   " + RESET)
-    bottom.append(WALL_COLOR + "+" + RESET)
+            bottom.append(WALL_COLOR + " " + RESET + "   ")
+    bottom.append(WALL_COLOR + " " + RESET)
     bottom_line = ''.join(bottom)
     print(bottom_line)
 
