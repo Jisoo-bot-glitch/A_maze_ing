@@ -1,8 +1,5 @@
-#! /usr/bin/env python3
-NORTH = 1
-EAST = 2
-SOUTH = 4
-WEST = 8
+from collections import deque
+from .constants import N, E, S, W
 
 
 def solver(maze: list[list[int]],
@@ -26,44 +23,32 @@ def solver(maze: list[list[int]],
         Returns an empty string if the exit cannot be reached.
     """
     x, y = entry
-    q = []
-    visited = []
+    q: deque[tuple[tuple[int, int], str]] = deque()
+    visited: set[tuple[int, int]] = set()
     q.append(((x, y), ""))
-    visited.append((x, y))
+    visited.add((x, y))
     while q:
-        (x, y), path = q.pop(0)
+        (x, y), path = q.popleft()
         if (x, y) == exit_p:
             return (path)
-        if (not (maze[y][x] & EAST)
+        if (not (maze[y][x] & E)
                 and x + 1 < len(maze[0])
                 and (x + 1, y) not in visited):
-            visited.append((x + 1, y))
+            visited.add((x + 1, y))
             q.append(((x + 1, y), path + "E"))
-        if (not (maze[y][x] & SOUTH)
+        if (not (maze[y][x] & S)
                 and y + 1 < len(maze)
                 and (x, y + 1) not in visited):
-            visited.append((x, y + 1))
+            visited.add((x, y + 1))
             q.append(((x, y + 1), path + "S"))
-        if (not (maze[y][x] & WEST)
+        if (not (maze[y][x] & W)
                 and x - 1 >= 0
                 and (x - 1, y) not in visited):
-            visited.append((x - 1, y))
+            visited.add((x - 1, y))
             q.append(((x - 1, y), path + "W"))
-        if (not (maze[y][x] & NORTH)
+        if (not (maze[y][x] & N)
                 and y - 1 >= 0
                 and (x, y - 1) not in visited):
-            visited.append((x, y - 1))
+            visited.add((x, y - 1))
             q.append(((x, y - 1), path + "N"))
     return ""
-
-
-if __name__ == "__main__":
-    maze = [[11, 9, 3, 11, 13, 5, 3],
-            [8, 6, 12, 0, 5, 1, 6],
-            [14, 9, 5, 6, 9, 2, 11],
-            [13, 6, 9, 5, 2, 12, 6],
-            [9, 1, 6, 13, 4, 5, 3],
-            [10, 12, 5, 1, 3, 11, 10],
-            [12, 5, 7, 12, 12, 6, 14]]
-    path = "ESEEESWSWWSWSEES"
-    print(solver(maze, (1, 0), (3, 6)))

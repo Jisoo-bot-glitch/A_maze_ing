@@ -1,4 +1,3 @@
-#! /usr/bin/env python3
 def output_maze(
         file: str,
         maze: list[list[int]],

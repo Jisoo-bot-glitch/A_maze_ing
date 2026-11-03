@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mazegen"
+version = "1.0.0"
+description = "Reusable generator"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE.md"]
+
+[tool.setuptools]
+packages = ["mazegen"]
