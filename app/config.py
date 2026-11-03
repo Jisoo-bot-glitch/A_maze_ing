@@ -49,8 +49,11 @@ def parse_file(file: str) -> dict[str, Any]:
         is unknown or duplicated, or a mandatory key is missing.
     """
     raw_config: dict[str, Any] = {}
-    with open(file, "r") as f:
-        raw: str = f.read()
+    try:
+        with open(file, "r", encoding="utf-8") as f:
+            raw: str = f.read()
+    except UnicodeDecodeError:
+        raise ConfigError(f"'{file}' is not a text file")
     lines = raw.splitlines()
     for number, line in enumerate(lines, start=1):
         line = line.strip()
@@ -124,7 +127,7 @@ def parse_coord(raw: dict[str, str], key: str,
         y = int(parts[1])
     except ValueError:
         raise ConfigError(f"{key} must be two integers, got '{raw[key]}'")
-    if (not 0 <= x < width) and (0 <= y < height):
+    if (not 0 <= x < width and 0 <= y < height):
         raise ConfigError(f"{key} {(x, y)} is outside the maze")
     return (x, y)
 

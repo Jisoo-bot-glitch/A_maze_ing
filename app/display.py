@@ -1,4 +1,3 @@
-#! /usr/bin/env python3
 NORTH = 1
 EAST = 2
 SOUTH = 4

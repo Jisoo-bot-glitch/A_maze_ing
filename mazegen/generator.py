@@ -13,32 +13,32 @@ walls: N=1, E=2, S=4, W=8. A cell is (x, y) = (column, row)
 """
 
 import random
-
+from collections import deque
 from .constants import (
     ALL_WALLS,
     CHAR,
     DIRECTIONS,
-    E,
     MAX_OPEN_AREA,
     MIN_HEIGHT_PATTERN,
     MIN_LOOPS,
     MIN_WIDTH_PATTERN,
-    N,
     OPPOSITE,
     PATTERN_42,
     STEP,
+    N,
+    E,
     S,
     W,
+    LETTER,
 )
 from .errors import MazeError
-from .solver import bfs, path_to_directions, shortest_path
+from .solver import solver
 
 # A cell position (x, y) = (column, row)
 Cell = tuple[int, int]
-
 MIN_SIZE = 2
-
 SEED_RANGE = 2 ** 32
+
 
 class MazeGenerator:
     """Generate a perfect maze or a Pac-Man-ready board"""
@@ -83,7 +83,7 @@ class MazeGenerator:
 
         self._rng = random.Random(self._seed)
         self._grid = [
-            [ALL_WALLS] * self._width for _ in range(self._height)
+         [ALL_WALLS] * self._width for _ in range(self._height)
         ]
         self._place_pattern()
         self._carve_perfect()
@@ -149,15 +149,20 @@ class MazeGenerator:
 
     def solve(self) -> list[Cell]:
         """Return a shortest path from entry to exit (list of cells)"""
-        self._require_generated()
-        path = shortest_path(self._grid, self._entry, self._exit)
-        if not path:
-            raise MazeError('exit is not reachable from entry')
-        return path
+        x, y = self._entry
+        cells = [(x, y)]
+        for letter in self.solution_directions():
+            x, y = self._neighbour(x, y, _DIRECTION_OF[letter])
+            cells.append((x, y))
+        return cells
 
     def solution_directions(self) -> str:
         """Return the shortest path as N/E/S/W letters"""
-        return path_to_directions(self.solve())
+        self._require_generated()
+        path = solver(self._grid, self._entry, self._exit)
+        if not path:
+            raise MazeError('exit is not reachable from entry')
+        return path
 
     # Grid helpers
     def _checked_cell(self, cell: Cell, name: str) -> Cell:
@@ -412,12 +417,25 @@ class MazeGenerator:
 
     def _check_connected(self) -> None:
         """Check that every cell except 42 is reachable from entry"""
-        reached = bfs(self._grid, self._entry)
+        reached = self._reachable()
         expected = self._width * self._height - len(self._pattern)
         if len(reached) != expected:
             raise MazeError(
-                f'{expected - len(reached)} cell unreachable from entry'
+                f'{expected - len(reached)} cell(s) unreachable from entry'
             )
+
+    def _reachable(self) -> set[Cell]:
+        """Return every cell reachable from entry (BFS, no stop at exit)"""
+        seen = {self._entry}
+        queue = deque([self._entry])
+        while queue:
+            x, y = queue.popleft()
+            for d in DIRECTIONS:
+                nxt = self._neighbour(x, y, d)
+                if not self._grid[y][x] & d and nxt not in seen:
+                    seen.add(nxt)
+                    queue.append(nxt)
+        return seen
 
     def _check_no_open_area(self) -> None:
         """Check that there is no open 3x3 area anywhere"""
@@ -428,6 +446,9 @@ class MazeGenerator:
                     raise MazeError(
                         f'open {size}x{size} area at ({wx}, {wy})'
                     )
+
+
+_DIRECTION_OF = {letter: d for d, letter in LETTER.items()}
 
 
 def _is_int(value: object) -> bool:
