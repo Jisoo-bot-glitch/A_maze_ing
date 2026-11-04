@@ -42,8 +42,10 @@ def display(
         entry: tuple[int, int],
         exit_p: tuple[int, int],
         path: str,
-        pattern: frozenset[tuple[int, int]]) -> None:
-    """Print the maze in the terminal, highlighting entry, exit and path.
+        pattern: frozenset[tuple[int, int]],
+        wall_color: str = WALL_COLOR) -> None:
+    """Print the maze in the terminal, highlighting entry, exit, path
+    and the 42 pattern.
 
     Args:
         maze: Grid of cells accessed as maze[y][x]. Each cell is an int
@@ -52,7 +54,9 @@ def display(
         entry: Entry coordinates as (x, y).
         exit_p: Exit coordinates as (x, y).
         path: Shortest path from entry to exit, as a string of
-              'N', 'E', 'S', 'W' letters.
+            'N', 'E', 'S', 'W' letters. An empty string hides the path.
+        pattern: Cells of the 42 pattern, drawn in their own color.
+        wall_color: ANSI color code used for the walls.
     """
     cells = path_cells(entry, path)
     for y, floor in enumerate(maze):
@@ -60,11 +64,11 @@ def display(
         mid = []
         for x, cell in enumerate(floor):
             if cell & NORTH:
-                top.append(WALL_COLOR + "    " + RESET)
+                top.append(wall_color + "    " + RESET)
             else:
-                top.append(WALL_COLOR + " " + RESET + "   ")
+                top.append(wall_color + " " + RESET + "   ")
             if cell & WEST:
-                wall = WALL_COLOR + " " + RESET
+                wall = wall_color + " " + RESET
             else:
                 wall = " "
             if (x, y) == entry:
@@ -78,9 +82,9 @@ def display(
             else:
                 inside = "   "
             mid.append(wall + inside)
-        top.append(WALL_COLOR + " " + RESET)
+        top.append(wall_color + " " + RESET)
         if floor[-1] & EAST:
-            mid.append(WALL_COLOR + " " + RESET)
+            mid.append(wall_color + " " + RESET)
         top_line = ''.join(top)
         print(top_line)
         mid_line = ''.join(mid)
@@ -88,22 +92,9 @@ def display(
     bottom = []
     for end in maze[-1]:
         if end & SOUTH:
-            bottom.append(WALL_COLOR + "    " + RESET)
+            bottom.append(wall_color + "    " + RESET)
         else:
-            bottom.append(WALL_COLOR + " " + RESET + "   ")
-    bottom.append(WALL_COLOR + " " + RESET)
+            bottom.append(wall_color + " " + RESET + "   ")
+    bottom.append(wall_color + " " + RESET)
     bottom_line = ''.join(bottom)
     print(bottom_line)
-
-
-if __name__ == "__main__":
-    maze = [[11, 9, 3, 11, 13, 5, 3],
-            [8, 6, 12, 0, 5, 1, 6],
-            [14, 9, 5, 6, 9, 2, 11],
-            [13, 6, 9, 5, 2, 12, 6],
-            [9, 1, 6, 13, 4, 5, 3],
-            [10, 12, 5, 1, 3, 11, 10],
-            [12, 5, 7, 12, 12, 6, 14]]
-    path = "ESEEESWSWWSWSEES"
-    display(maze, (1, 0), (3, 6), path)
-    print(path_cells((1, 0), "ESEEESWSWWSWSEES"))

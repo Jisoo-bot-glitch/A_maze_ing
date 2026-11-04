@@ -4,6 +4,7 @@ from app.errors import ConfigError
 ALLOWED_KEYS = ["WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT",
                 "SEED"]
 MUST_KEYS = ["WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT"]
+MAX_SIZE = 200
 
 
 # @dataclass automatically generates the __init__() method.
@@ -88,7 +89,7 @@ def positive_int(raw: dict[str, str], key: str) -> int:
         key: Key to convert (e.g. "WIDTH").
 
     Returns:
-        The value as an int greater than 0.
+        The value as an int between 1 and MAX_SIZE.
 
     Raises:
         ConfigError: If the value is not an integer or is not positive.
@@ -99,6 +100,8 @@ def positive_int(raw: dict[str, str], key: str) -> int:
         raise ConfigError(f"{key} must be an integer, got '{raw[key]}'")
     if number <= 0:
         raise ConfigError(f"{key} must be positive, got {number}")
+    if number > MAX_SIZE:
+        raise ConfigError(f"{key} must be at most 200, got {number}")
     return number
 
 
