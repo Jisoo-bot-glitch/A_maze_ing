@@ -44,6 +44,7 @@ def main() -> None:
         show_path = True
         wall_colors = ["\033[45m", "\033[44m", "\033[41m"]
         color_index = 0
+        print("\033[2J\033[H", end="")
         display(maze,
                 config.entry,
                 config.exit,
@@ -67,7 +68,7 @@ def main() -> None:
                                           config.entry,
                                           config.exit,
                                           config.perfect,
-                                          config.seed)
+                                          None)
                 maze = generator.generate()
                 if not generator.pattern_drawn:
                     print("Warning: 42 pattern failed - maze size",
@@ -92,6 +93,7 @@ def main() -> None:
                 shown_path = path
             else:
                 shown_path = ""
+            print("\033[2J\033[H", end="")
             display(maze,
                     config.entry,
                     config.exit,
