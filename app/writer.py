@@ -38,13 +38,3 @@ def output_maze(
         f.write("\n")
         f.write(path)
         f.write("\n")
-
-
-if __name__ == "__main__":
-    maze = [[9, 5],
-            [7, 12],
-            [9, 13]]
-    entry = (0, 0)
-    exit_p = (19, 17)
-    path = "SWESENSWSSENEEENNESSSEES"
-    output_maze("output_maze.txt", maze, entry, exit_p, path)
