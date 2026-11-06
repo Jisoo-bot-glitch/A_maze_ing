@@ -20,6 +20,25 @@ from mazegen import MazeGenerator, MazeError
 
 def build_maze(config: Config, seed: int | None
                ) -> tuple[list[list[int]], str, frozenset[tuple[int, int]]]:
+    """Generate a maze, find its shortest path and write the output file.
+
+    Prints a warning on stderr if the maze is too small for the 42
+    pattern.
+
+    Args:
+        config: Validated settings read from the config file.
+        seed: Seed for the generator. Use config.seed to get the same
+            maze again, or None to get a new random maze.
+
+    Returns:
+        A tuple (maze, path, pattern): the grid as maze[y][x], the
+        shortest path as 'N', 'E', 'S', 'W' letters, and the cells of
+        the 42 pattern.
+
+    Raises:
+        MazeError: If the maze cannot be generated or solved.
+        OSError: If the output file cannot be written.
+    """
     generator = MazeGenerator(config.width,
                               config.height,
                               config.entry,
