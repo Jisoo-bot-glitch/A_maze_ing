@@ -59,6 +59,20 @@ make run
 `config.txt` is the default configuration file. Any other file name can be
 given as the only argument.
 
+### Tests
+
+The tests are not graded, we use them to check that nothing is broken
+after a change. They need `pytest`:
+
+```bash
+python3 -m pip install pytest
+python3 -m pytest tests
+```
+
+`tests/test_generator.py` checks the walls, the border, the loops in both
+modes, the seed, the path, the "42" and the errors. `tests/test_solver.py`
+checks the solver on a small maze we know.
+
 ### Makefile rules
 
 | Rule | Description |
@@ -110,8 +124,8 @@ SEED=42
 
 | Key | Mandatory | Description | Rules |
 | --- | --- | --- | --- |
-| `WIDTH` | yes | Number of cells per row | Integer from 1 to 200 |
-| `HEIGHT` | yes | Number of rows | Integer from 1 to 200 |
+| `WIDTH` | yes | Number of cells per row | Integer from 2 to 200 |
+| `HEIGHT` | yes | Number of rows | Integer from 2 to 200 |
 | `ENTRY` | yes | Entry cell as `x,y` | Two integers, inside the maze |
 | `EXIT` | yes | Exit cell as `x,y` | Two integers, inside the maze, different from `ENTRY` |
 | `OUTPUT_FILE` | yes | Name of the output file | Not empty. Created, or overwritten if it exists |
@@ -224,9 +238,13 @@ the `mazegen` package and does not depend on the rest of the project.
 
 ```bash
 python3 -m pip install build
-python3 -m build
+python3 -m build --wheel --outdir .
 pip install mazegen-1.0.0-py3-none-any.whl
 ```
+
+With `--outdir .` the wheel goes to the root of the repo, without it
+it goes to `dist/`. Only the `mazegen/` folder is in the package
+(`packages = ["mazegen"]` in `pyproject.toml`).
 
 The wheel file `mazegen-1.0.0-py3-none-any.whl` is also available at the
 root of the repository.
@@ -278,53 +296,39 @@ Invalid parameters, or a maze that fails its self-check, raise `MazeError`.
 
 | Member | Role |
 | --- | --- |
-| **efatin** | `mazegen` package: grid model, "42" pattern, perfect maze (DFS), Pac-Man mode, self-validation, constants, `MazeError`, packaging (`pyproject.toml`, wheel), `LICENSE.md`. Integration tests on many mazes, and speed improvements of the solver (`deque` and `set`). |
+| **efatin** | `mazegen` package: grid model, "42" pattern, perfect maze (DFS), Pac-Man mode, self-validation, constants, `MazeError`, packaging (`pyproject.toml`, wheel), `LICENSE.md`. Generator tests on many mazes, and speed improvements of the solver (`deque` and `set`). |
 | **jisobaek** | Application side: config parser and validation (`ConfigError`), output file writer, terminal display (colors, path, "42"), BFS solver, main program and interactive menu, `Makefile`, default config. |
 
-Both: shared interfaces, code reviews through pull requests, README,
-defense preparation.
+Both: shared interfaces, code reviews through pull requests, README, defense preparation.
 
 ### Planning and how it evolved
 
 The first plan was about 17 days:
 
-1. Agree on the shared interfaces (grid as `grid[y][x]`, coordinates as
-   `(x, y)`, wall bits, path as letters).
-2. Work in parallel: generator on one side, config, writer, display and
-   solver on the other side.
+1. Agree on the shared interfaces (grid as `grid[y][x]`, coordinates as `(x, y)`, wall bits, path as letters).
+2. Work in parallel: generator on one side, config, writer, display and solver on the other side.
 3. Integrate, test with `maze_analyzer.py`, write the README.
 
 How it evolved:
 
-- The writer and the display were done first, so the generator could be
-  checked with `maze_analyzer.py` and seen on screen early.
-- The solver was first written as a temporary placeholder inside the
-  package to test the generator, then replaced by the final BFS solver.
-  The generator was updated to call it.
-- The interactive menu was moved from `display.py` to `a_maze_ing.py`, so
-  that `display.py` only draws and the main program controls the flow.
-- One week was slower than planned because of illness, so the integration
-  and the menu were done at the end.
+- The writer and the display were done first, so the generator could be checked with `maze_analyzer.py` and seen on screen early.
+- The solver was first written as a temporary placeholder inside the package to test the generator, then replaced by the final BFS solver. The generator was updated to call it.
+- The interactive menu was moved from `display.py` to `a_maze_ing.py`, so that `display.py` only draws and the main program controls the flow.
+- One week was slower than planned because of illness, so the integration and the menu were done at the end.
 
 <!-- TODO: check the dates and adjust this section together. -->
 
 ### What worked well
 
 - Clear ownership: each file had one owner, written in a shared tracker.
-- Agreeing early on the grid format and on `(x, y)` coordinates made the
-  parts fit together with very few changes.
-- Reviewing each other's code found real bugs on both sides (for example
-  a wrong bounds check in the config, and a slow list-based queue in the
-  solver).
-- `maze_analyzer.py` and a test on hundreds of mazes gave confidence in the
-  generator and the solver.
+- Agreeing early on the grid format and on `(x, y)` coordinates made the parts fit together with very few changes.
+- Reviewing each other's code found real bugs on both sides (for example a wrong bounds check in the config, and a slow list-based queue in the solver).
+- `maze_analyzer.py` and a test on hundreds of mazes gave confidence in the generator and the solver.
 
 ### What could be improved
 
-- Agree on the generator's public API even earlier, before writing code
-  that depends on it.
-- Always merge through a pull request after the other member's review, and
-  ask before changing a file owned by the other member.
+- Agree on the generator's public API even earlier, before writing code that depends on it.
+- Always merge through a pull request after the other member's review, and ask before changing a file owned by the other member.
 - Update the tracker together with every commit.
 
 ### Tools
@@ -357,7 +361,8 @@ How it evolved:
   and main program were written by jisobaek, step by step. AI helped
   write some docstrings and draft this README.
 
-<!-- TODO (efatin): describe how you used AI, if you did. -->
+- **efatin** used Claude for:
+explanations: bit operations, graphs and spanning trees, DFS and BFS, the loop formula `open walls - cells + 1`, and study notes to prepare the defense
 
 ## License
 
