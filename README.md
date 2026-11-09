@@ -318,7 +318,7 @@ How it evolved:
 
 ### What worked well
 
-- Clear ownership: each file had one owner, written in a shared tracker.
+- Clear ownership: each file had one owner.
 - Agreeing early on the grid format and on `(x, y)` coordinates made the parts fit together with very few changes.
 - Reviewing each other's code found real bugs on both sides (for example a wrong bounds check in the config, and a slow list-based queue in the solver).
 - `maze_analyzer.py` and a test on hundreds of mazes gave confidence in the generator and the solver.
@@ -332,7 +332,6 @@ How it evolved:
 ### Tools
 
 - Git and GitHub (branches, pull requests, code review)
-- A shared `TRACKER.md` for tasks, owners and status
 - `flake8` and `mypy`
 - `maze_analyzer.py` (given with the subject) and a custom tester
 - `pdb` for debugging

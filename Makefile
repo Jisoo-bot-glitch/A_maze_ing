@@ -19,11 +19,11 @@ clean :
 	find . -name ".DS_Store" -type f -delete
 
 lint: 
-	flake8 . --exclude .venv
-	mypy . --exclude .venv --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	flake8 . --exclude .venv,build
+	mypy . --exclude "(.venv|build)/" --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 lint-strict:
-	flake8 . --exclude .venv
-	mypy . --exclude .venv --strict
+	flake8 . --exclude .venv,build
+	mypy . --exclude "(.venv|build)/" --strict
 
 .PHONY: all run install debug clean lint lint-strict
