@@ -7,8 +7,51 @@ Reads the config file, builds the maze with mazegen, writes it to the
 output file in hex format and draws it in the terminal.
 """
 import sys
-from app import parse_file, build_config, ConfigError, output_maze, display
+from app import (
+    parse_file,
+    build_config,
+    Config,
+    ConfigError,
+    output_maze,
+    display
+)
 from mazegen import MazeGenerator, MazeError
+
+
+def build_maze(config: Config, seed: int | None
+               ) -> tuple[list[list[int]], str, frozenset[tuple[int, int]]]:
+    """Generate a maze, find its shortest path and write the output file.
+
+    Prints a warning on stderr if the maze is too small for the 42
+    pattern.
+
+    Args:
+        config: Validated settings read from the config file.
+        seed: Seed for the generator. Use config.seed to get the same
+            maze again, or None to get a new random maze.
+
+    Returns:
+        A tuple (maze, path, pattern): the grid as maze[y][x], the
+        shortest path as 'N', 'E', 'S', 'W' letters, and the cells of
+        the 42 pattern.
+
+    Raises:
+        MazeError: If the maze cannot be generated or solved.
+        OSError: If the output file cannot be written.
+    """
+    generator = MazeGenerator(config.width,
+                              config.height,
+                              config.entry,
+                              config.exit,
+                              config.perfect,
+                              seed)
+    maze = generator.generate()
+    if not generator.pattern_drawn:
+        print("Warning: 42 pattern failed - maze size", file=sys.stderr)
+    path = generator.solution_directions()
+    pattern = generator.pattern_cells
+    output_maze(config.output_file, maze, config.entry, config.exit, path)
+    return maze, path, pattern
 
 
 def main() -> None:
@@ -33,17 +76,11 @@ def main() -> None:
         sys.exit(1)
     try:
         config = build_config(parse_file(sys.argv[1]))
-        generator = MazeGenerator(config.width, config.height, config.entry,
-                                  config.exit, config.perfect, config.seed)
-        maze = generator.generate()
-        if not generator.pattern_drawn:
-            print("Warning: 42 pattern failed - maze size", file=sys.stderr)
-        path = generator.solution_directions()
-        pattern = generator.pattern_cells
-        output_maze(config.output_file, maze, config.entry, config.exit, path)
+        maze, path, pattern = build_maze(config, config.seed)
         show_path = True
         wall_colors = ["\033[45m", "\033[44m", "\033[41m"]
         color_index = 0
+        print("\033[2J\033[H", end="")
         display(maze,
                 config.entry,
                 config.exit,
@@ -62,23 +99,7 @@ def main() -> None:
                 print()
                 break
             if choice == "1":
-                generator = MazeGenerator(config.width,
-                                          config.height,
-                                          config.entry,
-                                          config.exit,
-                                          config.perfect,
-                                          config.seed)
-                maze = generator.generate()
-                if not generator.pattern_drawn:
-                    print("Warning: 42 pattern failed - maze size",
-                          file=sys.stderr)
-                path = generator.solution_directions()
-                pattern = generator.pattern_cells
-                output_maze(config.output_file,
-                            maze,
-                            config.entry,
-                            config.exit,
-                            path)
+                maze, path, pattern = build_maze(config, None)
             elif choice == "2":
                 show_path = not show_path
             elif choice == "3":
@@ -92,6 +113,7 @@ def main() -> None:
                 shown_path = path
             else:
                 shown_path = ""
+            print("\033[2J\033[H", end="")
             display(maze,
                     config.entry,
                     config.exit,

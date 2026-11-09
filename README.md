@@ -80,7 +80,7 @@ checks the solver on a small maze we know.
 | `make install` | Install the development tools (flake8, mypy, build) |
 | `make run` | Run the program with `config.txt` |
 | `make debug` | Run the program with the Python debugger (`pdb`) |
-| `make clean` | Remove `__pycache__`, `.mypy_cache` and `.DS_Store` files |
+| `make clean` | Remove `__pycache__`, `.mypy_cache`, `.DS_Store`, `build/` and `*.egg-info` |
 | `make lint` | Run `flake8` and `mypy` with the flags required by the subject |
 | `make lint-strict` | Run `flake8` and `mypy --strict` |
 
@@ -316,11 +316,9 @@ How it evolved:
 - The interactive menu was moved from `display.py` to `a_maze_ing.py`, so that `display.py` only draws and the main program controls the flow.
 - One week was slower than planned because of illness, so the integration and the menu were done at the end.
 
-<!-- TODO: check the dates and adjust this section together. -->
-
 ### What worked well
 
-- Clear ownership: each file had one owner, written in a shared tracker.
+- Clear ownership: each file had one owner.
 - Agreeing early on the grid format and on `(x, y)` coordinates made the parts fit together with very few changes.
 - Reviewing each other's code found real bugs on both sides (for example a wrong bounds check in the config, and a slow list-based queue in the solver).
 - `maze_analyzer.py` and a test on hundreds of mazes gave confidence in the generator and the solver.
@@ -334,7 +332,6 @@ How it evolved:
 ### Tools
 
 - Git and GitHub (branches, pull requests, code review)
-- A shared `TRACKER.md` for tasks, owners and status
 - `flake8` and `mypy`
 - `maze_analyzer.py` (given with the subject) and a custom tester
 - `pdb` for debugging
@@ -362,7 +359,7 @@ How it evolved:
   write some docstrings and draft this README.
 
 - **efatin** used Claude for:
-explanations: bit operations, graphs and spanning trees, DFS and BFS, the loop formula `open walls - cells + 1`, and study notes to prepare the defense
+  explanations: bit operations, graphs and spanning trees, DFS and BFS, the loop formula `open walls - cells + 1`, and study notes to prepare the defense
 
 ## License
 

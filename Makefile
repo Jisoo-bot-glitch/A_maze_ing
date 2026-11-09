@@ -14,16 +14,16 @@ debug:
 	$(PYTHON) -m pdb $(MAIN) $(CONFIG)
 
 clean : 
-	rm -rf .mypy_cache
+	rm -rf .mypy_cache build *.egg-info
 	find . -name "__pycache__" -type d -exec rm -rf {} +
 	find . -name ".DS_Store" -type f -delete
 
 lint: 
-	flake8 .
-	mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	flake8 . --exclude .venv,build
+	mypy . --exclude "(.venv|build)/" --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
-lint-strict: 
-	flake8 .
-	mypy . --strict
+lint-strict:
+	flake8 . --exclude .venv,build
+	mypy . --exclude "(.venv|build)/" --strict
 
 .PHONY: all run install debug clean lint lint-strict
